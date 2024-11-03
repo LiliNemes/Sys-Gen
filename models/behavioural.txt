@@ -1,0 +1,88 @@
+abstract class Definition{
+    contains Usage[] features
+}
+
+abstract class Usage{
+	Definition[1] definition
+}
+
+class OccurrenceDefinition extends Definition{}
+
+class OccurrenceUsage extends Usage{}
+
+class ActionDefinition extends OccurrenceDefinition{}
+
+class ActionUsage extends OccurrenceUsage{}
+
+abstract class ControlNode extends ActionUsage{}
+
+class MergeNode extends ControlNode{}
+
+class DecisionNode extends ControlNode{}
+
+class ForkNode extends ControlNode{}
+
+class JoinNode extends ControlNode{}
+
+
+error invalidUsageType(Usage u) <->
+	OccurrenceUsage(u),
+	!OccurrenceDefinition(d),
+	definition(u, d);
+
+	ActionUsage(u),
+	!ActionDefinition(d),
+	definition(u,d).
+
+pred sameTypeUsage(Usage u) <->
+	Definition(d),
+	features(d,u),
+	definition(u,d).
+
+default !sameTypeUsage(*).
+
+%sameTypeUsage(Loopy).
+
+atom Decision.
+atom Merge.
+atom Fork.
+atom Join.
+
+ActionDefinition(Join).
+ActionDefinition(Decision).
+ActionDefinition(Merge).
+ActionDefinition(Fork).
+
+
+error noFeatures(node d) <->
+    features(Decision, d);
+    features(Merge, d);
+    features(Join, d);
+    features(Fork, d).
+
+error decisionNodeType(DecisionNode d) <->
+	!definition(d, Decision).
+
+error mergeNodeType(MergeNode d) <->
+	!definition(d, Merge).
+
+error forkNodeType(ForkNode d) <->
+	!definition(d, Fork).
+
+
+error joinNodeType(JoinNode d) <->
+    !definition(d, Join).
+
+pred notConnected(node a, node b) <->
+	!neighbour+(a,b),
+	a != b.
+
+!notConnected(,).
+
+pred neighbour(node a, node b) <->
+	features(a,b);
+	features(b,a);
+	definition(a,b);
+	definition(b,a).
+
+scope node =10.
