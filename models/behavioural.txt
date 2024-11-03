@@ -77,7 +77,7 @@ pred notConnected(node a, node b) <->
 	!neighbour+(a,b),
 	a != b.
 
-!notConnected(,).
+!notConnected(*,*).
 
 pred neighbour(node a, node b) <->
 	features(a,b);
